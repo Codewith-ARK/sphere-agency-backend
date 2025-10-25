@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import *
 from tasks.serializers import TaskDetailSerializer
+from users.serializers import UserSummarySerializer
 
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,7 +28,13 @@ class ContractDetailSerializer(serializers.ModelSerializer):
 class CampaignDetailSerializer(serializers.ModelSerializer):
     tasks = TaskDetailSerializer(many=True, read_only=True)
     contract = ContractDetailSerializer()
+    created_by = UserSummarySerializer()
     class Meta:
         model = Campaign
         fields = '__all__'
         
+class CampaignSummarySerializer(serializers.ModelSerializer):
+    created_by = UserSummarySerializer()
+    class Meta:
+        model = Campaign
+        fields = '__all__'

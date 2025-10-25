@@ -77,7 +77,7 @@ class GetCampaign(generics.RetrieveAPIView):
 
 class GetAllCampaign(generics.ListAPIView):
     queryset = Campaign.objects.all()
-    serializer_class = CampaignDetailSerializer
+    serializer_class = CampaignSummarySerializer
     ordering = ["-created_at"]
 
     def get(self, request):
@@ -116,7 +116,7 @@ class QuoteCampaignBudget(views.APIView):
             }
 
             quote = generate_budget(json.dumps(structured))
-            return Response(quote, status=200)
+            return Response(quote[0], status=200)
         except Exception as e:
             return Response({"error": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
