@@ -88,7 +88,7 @@ def generate_and_save_tasks(campaign, employees):
     
 from django.db import transaction
 from llm.helper import format_response
-from llm.prompts import contract_prompt
+from llm.prompts import contract_prompt, contract_prompt_v2
 from .models import Contract, Campaign
 from .serializers import ClauseSerializer
 from rest_framework.exceptions import ValidationError
@@ -96,7 +96,7 @@ from rest_framework.exceptions import ValidationError
 @transaction.atomic
 def generate_and_save_contract(campaign_data):
     try:
-        response = gemini_client(contract_prompt(campaign_data))    
+        response = gemini_client(contract_prompt_v2(campaign_data))    
         clauses = format_response(response.text)
     except Exception as e:
         print(f"LLM/formatting failed for campaign {campaign_data['id']}: {e}")
