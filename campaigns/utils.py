@@ -94,9 +94,9 @@ from .serializers import ClauseSerializer
 from rest_framework.exceptions import ValidationError
 
 @transaction.atomic
-def generate_and_save_contract(campaign_data):
+def generate_and_save_contract(campaign_data, client_info):
     try:
-        response = gemini_client(contract_prompt_v2(campaign_data))    
+        response = gemini_client(contract_prompt_v2(campaign_data, client_info))    
         clauses = format_response(response.text)
     except Exception as e:
         print(f"LLM/formatting failed for campaign {campaign_data['id']}: {e}")

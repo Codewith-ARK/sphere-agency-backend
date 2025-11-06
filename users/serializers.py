@@ -66,9 +66,13 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 class UserSummarySerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
     class Meta:
         model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'role']
+        fields = ['id', 'name', 'email', 'role']
+
+    def get_name(self, obj):
+        return obj.get_full_name()
 
 
 class UserSerializer(serializers.ModelSerializer):

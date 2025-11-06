@@ -53,8 +53,9 @@ class UpdateCampaignStatus(views.APIView):
             "id", "user__email", "task_count"
         )
         campaign_data = CampaignSerializer(campaign).data
+        client_info = campaign.created_by.get_full_name()
         threading.Thread(target=generate_and_save_tasks, args=(campaign,employees)).start()
-        threading.Thread(target=generate_and_save_contract, args=(dict(campaign_data),)).start()
+        threading.Thread(target=generate_and_save_contract, args=(dict(campaign_data), client_info)).start()
 
         campaign.status = 'generating'
         campaign.save()
@@ -146,6 +147,7 @@ class GenerateContract(views.APIView):
     def post(self, request, pk):
         campaign = Campaign.objects.get(id=pk)
         campaign_data = CampaignSerializer(campaign).data
-        response = generate_and_save_contract(dict(campaign_data))
+        client_info = campaign.created_by.get_full_name()
+        response = generate_and_save_contract(dict(campaign_data), client_info)
         return Response(response, status=200)
         
