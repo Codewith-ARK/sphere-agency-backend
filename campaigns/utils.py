@@ -1,5 +1,5 @@
 from llm.helper import gemini_client, format_response
-from llm.prompts import quote_prompt
+from llm.prompts import quote_prompt, task_prompt_v2
 
 
 def generate_budget(campaign):
@@ -18,28 +18,8 @@ def generate_budget(campaign):
 
 
 def generate_task(campaign):
-    prompt = f"""
-    You are an expert project manager, your task is to generate and distribute tasks among employees given their skills, and current workload. Given the campaign data. You are to generate 5 tasks that are required to complete this campaign successfully. These tasks are going to be performed by the employees of the agency.
     
-    CAMPAIGN and EMPLOYEE DATA:
-    {campaign}
-    
-
-     Expected Output (strict JSON array of objects, no commentary, no markdown):
-    {{
-        "title":"task title",
-        "priority":"high | medium | low" <lowercase values>,
-        "hours_required": "numbers of hours required to perform this task",
-        "objective":"a short description of what to achieve in this task. should be less than 240 characters. should be simple to understand and comprehend"
-        "assigned_to":<id of employee>
-    }}
-    
-    INSTRUCTIONS:
-    - Output should be valid JSON response.
-    - Do NOT provide any additional commentary.
-    - Make sure to use your prior knowledge and think about this task, before generating tasks.
-    """
-
+    prompt = task_prompt_v2(campaign)
     response = gemini_client(prompt)
 
     if response.text:
@@ -64,6 +44,7 @@ def generate_and_save_tasks(campaign, employees):
 
     try:
         response = generate_task(structured)
+        print(response)
         tasks = json.loads(response)  # might fail if LLM gives invalid JSON
     except Exception as e:
         print(f"Task generation failed for campaign {campaign.id}: {e}")

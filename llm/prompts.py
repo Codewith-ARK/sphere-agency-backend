@@ -235,3 +235,57 @@ def quote_prompt(campaign_data, hourly_rate=800):
 
         Only return the JSON. Do not include any commentary or Markdown.
     """
+
+def task_prompt_v1(campaign):
+    return f"""
+    You are an expert project manager, your task is to generate and distribute tasks among employees given their skills, and current workload. Given the campaign data. You are to generate 5 tasks that are required to complete this campaign successfully. These tasks are going to be performed by the employees of the agency.
+    
+    CAMPAIGN and EMPLOYEE DATA:
+    {campaign}
+    
+
+     Expected Output (strict JSON array of objects, no commentary, no markdown):
+    {{
+        "title":"task title",
+        "priority":"high | medium | low" <lowercase values>,
+        "hours_required": "numbers of hours required to perform this task",
+        "objective":"a short description of what to achieve in this task. should be less than 240 characters. should be simple to understand and comprehend"
+        "assigned_to":<id of employee>
+    }}
+    
+    INSTRUCTIONS:
+    - Output should be valid JSON response.
+    - Do NOT provide any additional commentary.
+    - Make sure to use your prior knowledge and think about this task, before generating tasks.
+    """
+
+def task_prompt_v2(campaign):
+    return f"""
+        You are an expert project manager. Your task is to generate and distribute tasks among employees given their skills and current workload for the provided campaign data. Generate exactly 5 tasks required to complete this campaign successfully. These tasks will be performed by the agency employees.
+
+        CAMPAIGN and EMPLOYEE DATA:
+        {campaign}
+
+        Important: the CAMPAIGN data includes an EMPLOYEES list where each employee object may have a 'skills' field. **Only assign tasks to employees whose 'skills' field exists and is non-empty.** Do NOT assign a task to any employee whose 'skills' field is missing, null, empty string, or an empty list/object.
+
+        Expected Output (strict JSON array of objects, no commentary, no markdown):
+        [
+        {{
+            "title": "task title",
+            "priority": "high | medium | low",
+            "hours_required": "number of hours required to perform this task",
+            "objective": "a short description of what to achieve in this task (<= 240 characters). Should be simple to understand and comprehend",
+            "assigned_to": <employee_id>
+        }},
+        ...
+        ]
+
+        INSTRUCTIONS:
+        - Output must be valid JSON (a JSON array with exactly 5 task objects). No additional text.
+        - Use only lowercase values for "priority" (high, medium, low).
+        - "hours_required" should be a numeric value (e.g., 8).
+        - "objective" must be simple, clear, and <= 240 characters.
+        - Choose eligible employees whose skills best match the task requirements. Do not assign to employees with blank or missing skills.
+        - Do NOT provide any additional commentary or markdown.
+        - Think carefully about task breakdown and employee fit before producing the JSON.
+        """

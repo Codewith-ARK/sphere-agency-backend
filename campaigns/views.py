@@ -50,8 +50,9 @@ class UpdateCampaignStatus(views.APIView):
 
         # Gather employee/task data for LLM
         employees = Employee.objects.annotate(task_count=Count("tasks")).values(
-            "id", "user__email", "task_count"
+            "id", "user__email", "task_count", 'skills'
         )
+        print(employees)
         campaign_data = CampaignSerializer(campaign).data
         client_info = campaign.created_by.get_full_name()
         threading.Thread(target=generate_and_save_tasks, args=(campaign,employees)).start()
